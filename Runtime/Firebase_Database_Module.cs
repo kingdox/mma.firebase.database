@@ -8,7 +8,7 @@ using UnityEngine;
 using Firebase.Database;
 #endregion
 // https://firebase.google.com/docs/database/unity/save-data
-namespace MMA.Business_Firebase_Database
+namespace MMA.Firebase_Database
 {
     public static partial class Key
     {
@@ -21,7 +21,7 @@ namespace MMA.Business_Firebase_Database
     {
         //public const string _ = _;
     }
-    public sealed partial class Business_Firebase_Database_Module : Module
+    public sealed partial class Firebase_Database_Module : Module
     {
         #region References
         //[Header("Applications")]
