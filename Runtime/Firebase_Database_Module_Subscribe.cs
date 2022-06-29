@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Firebase.Database;
 #endregion
-namespace MMA.Business_Firebase_Database
+namespace MMA.Firebase_Database
 {
     public static partial class Key
     {
@@ -18,7 +18,7 @@ namespace MMA.Business_Firebase_Database
     {
         //public const string _ = _;
     }
-    public sealed partial class Business_Firebase_Database_Module : Module
+    public sealed partial class Firebase_Database_Module : Module
     {
         #region References
         //[Header("Applications")]
