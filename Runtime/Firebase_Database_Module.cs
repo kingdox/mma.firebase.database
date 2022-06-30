@@ -44,8 +44,8 @@ namespace MMA.Firebase_Database
             Middleware<string, object>.Subscribe_Task(condition, Key.Get, Get);
             Middleware<(string path, object defaultValue), object>.Subscribe_Task(condition, Key.Get, Get);
 
-            //Subscribe TODO => Revisar como manejar los id sin que pete
-            //Middleware<(string pathKey, bool condition, Action<object> callback)>.Subscribe_Publish(condition, Key.Subscribe, Subscribe);
+            //Subscribe
+            Middleware<(string path, bool condition, Action<object> callback)>.Subscribe_Publish(condition, Key.Subscribe, Subscribe);
         }
         #endregion
         #region Methods
