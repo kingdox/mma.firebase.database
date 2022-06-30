@@ -1,5 +1,6 @@
 #region Access
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections;
@@ -23,53 +24,57 @@ namespace MMA.Firebase_Database
         #region References
         //[Header("Applications")]
         //[SerializeField] public ApplicationBase interface_Business_Firebase_Database_Module_Subscribe;
-        //private static readonly Dictionary<string, ( EventHandler<ValueChangedEventArgs> eventEval, Action<object> valueChangeCast)> _dic_subscriptions = new Dictionary<string, (EventHandler<ValueChangedEventArgs> eventEval, Action<object> valueChangeCast)>();
+        private Dictionary<string, Action<object>> _dic_subscriptions = new Dictionary<string, Action<object>>();
         #endregion
         #region Reactions ( On___ )
         // Contenedor de toda las reacciones del Business_Firebase_Database_Module_Subscribe
         #endregion
         #region Methods
         // Contenedor de toda la logica del Business_Firebase_Database_Module_Subscribe
-        private void Subscribe((string pathKey, bool condition, Action<object> callback) data)
+        private void Subscribe((string path, bool condition, Action<object> callback) data)
         {
-            string[] paths = data.pathKey.Split('/');
-            string uniqueKey = paths[paths.Length - 1];
-            Debug.Log($"Subscribe | {uniqueKey}");
-            //if (data.condition)
-            //{
-            //    //Si NO existe se añade
-            //    if (!_dic_subscriptions.ContainsKey(uniqueKey))
-            //    {
-                    
-            //        _dic_subscriptions.Add(uniqueKey, default);
-            //        EventHandler<ValueChangedEventArgs> a =
-            //        GetDatabaseReference(uniqueKey).ValueChanged += HandleValueChanged;
-            //    }
-            //    _dic_subscriptions += data.callback;
-            //}
-            //else if (_dic_subscriptions.ContainsKey(uniqueKey))
-            //{
-            //    _dic_subscriptions[uniqueKey] -= data.callback;
+            string[] paths = data.path.Split('/');
+            //Debug.Log($"Subscribe | {data.path}");
 
-            //    //Si no hay ninguno solicitando lo elimina del diccionario
-            //    if (_dic_subscriptions[uniqueKey] == null)
-            //    {
-            //        _dic_subscriptions.Remove(uniqueKey);
-            //        GetDatabaseReference(uniqueKey).ValueChanged -= HandleValueChanged;
-            //    }
-            //}
+            if (data.condition)
+            {
+                //Si NO existe se añade
+                if (!_dic_subscriptions.ContainsKey(data.path))
+                {
+                    _dic_subscriptions.Add(data.path, default);
+                    GetDatabaseReference(data.path).ValueChanged += HandleValueChanged;
+                }
+                _dic_subscriptions[data.path] += data.callback;
+            }
+            else if (_dic_subscriptions.ContainsKey(data.path))
+            {
+                _dic_subscriptions[data.path] -= data.callback;
+
+                //Si no hay ninguno solicitando lo elimina del diccionario
+                if (_dic_subscriptions[data.path] == null)
+                {
+                    _dic_subscriptions.Remove(data.path);
+                    GetDatabaseReference(data.path).ValueChanged -= HandleValueChanged;
+                }
+            }
         }
         private void HandleValueChanged(object sender, ValueChangedEventArgs args)
         {
             //Debug.Log(".....");
-            //if (args.DatabaseError != null)
-            //{
-            //    Debug.LogError(args.DatabaseError.Message);
-            //    return;
-            //}
-            //Debug.Log("Invoked");
-            ////Envía el dato suscrito
-            //_dic_subscriptions[args.Snapshot.Key]?.Invoke(args.Snapshot.Value);
+            if (args.DatabaseError != null)
+            {
+                Debug.LogError(args.DatabaseError.Message);
+                return;
+            }
+            //Debug.Log($"Invoked {sender}");
+
+            string stringLinkPath = args.Snapshot.Reference.ToString();
+            string _matcher = "//";
+            int index = stringLinkPath.LastIndexOf(_matcher);
+            stringLinkPath = stringLinkPath.Remove(0, index + _matcher.Length);
+
+            //Hacemos Invoke del value 
+            _dic_subscriptions[stringLinkPath]?.Invoke(args.Snapshot.Value);
         }
         #endregion
         #region Request ( Coroutines )
@@ -80,6 +85,3 @@ namespace MMA.Firebase_Database
         #endregion
     }
 }
-
-
-//TODO ver mañana
